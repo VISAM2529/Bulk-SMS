@@ -1,8 +1,13 @@
 import ReportDetails from '../../components/reports/ReportDetails'
 import { mockReports } from '../../lib/mockData'
 
-export default function ReportDetailsPage({ params }: { params: { id: string } }) {
-  const report = mockReports.find(r => r.id === params.id)
+interface ReportDetailsPageProps {
+  params: Promise<{ id: string }>
+}
+
+export default async function ReportDetailsPage({ params }: ReportDetailsPageProps) {
+  const { id } = await params
+  const report = mockReports.find(r => r.id === id)
   
   if (!report) {
     return (
