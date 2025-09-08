@@ -1,7 +1,7 @@
 "use client"
 import { useState } from 'react'
 import { useAuth } from '../../contexts/AuthContext'
-
+//sample
 export default function SettingsPage() {
   const [activeTab, setActiveTab] = useState('profile')
 
