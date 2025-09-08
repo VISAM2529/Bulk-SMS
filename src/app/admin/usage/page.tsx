@@ -1,3 +1,4 @@
+"use client"
 import UsageStats from '../../components/admin/UsageStats'
 import { useAuth } from '../../contexts/AuthContext'
 import { useRouter } from 'next/navigation'

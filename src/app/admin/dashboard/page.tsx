@@ -1,3 +1,4 @@
+"use client"
 import AdminDashboard from '../../components/admin/AdminDashboard'
 import { useAuth } from '../../contexts/AuthContext'
 import { useRouter } from 'next/navigation'

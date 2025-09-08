@@ -1,3 +1,4 @@
+"use client"
 import SupportTickets from '../../components/admin/SupportTickets'
 import { useAuth } from '../../contexts/AuthContext'
 import { useRouter } from 'next/navigation'

@@ -1,3 +1,4 @@
+"use client"
 import UserManagement from '../../components/admin/UserManagement'
 import { useAuth } from '../../contexts/AuthContext'
 import { useRouter } from 'next/navigation'
