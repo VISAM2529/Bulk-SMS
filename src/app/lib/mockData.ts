@@ -4,9 +4,36 @@ export const mockUsers = [
 ]
 
 export const mockCampaigns = [
-  { id: '1', userId: '1', name: 'Promo Campaign', message: 'Get 20% off!', mediaUrl: '', ctaButtons: [{ type: 'Visit Now', value: 'https://example.com' }], contacts: ['1234567890', '0987654321'], schedule: null, status: 'sent', creditsEstimated: 2, creditsUsed: 2 },
-  { id: '2', userId: '1', name: 'Reminder Campaign', message: 'Event tomorrow!', mediaUrl: '/sample.jpg', ctaButtons: [], contacts: ['1234567890'], schedule: new Date(), status: 'pending', creditsEstimated: 2, creditsUsed: 0 },
+  {
+    id: '1',
+    userId: '1',
+    name: 'Promo Campaign',
+    message: 'Get 20% off!',
+    mediaUrl: '',
+    ctaButtons: [{ type: 'Visit Now', value: 'https://example.com' }],
+    contacts: ['1234567890', '0987654321'],
+    schedule: null,
+    status: 'sent',
+    creditsEstimated: 2,
+    creditsUsed: 2,
+    delivered: 2, // ✅ added
+  },
+  {
+    id: '2',
+    userId: '1',
+    name: 'Reminder Campaign',
+    message: 'Event tomorrow!',
+    mediaUrl: '/sample.jpg',
+    ctaButtons: [],
+    contacts: ['1234567890'],
+    schedule: new Date(),
+    status: 'pending',
+    creditsEstimated: 2,
+    creditsUsed: 0,
+    delivered: 0, // ✅ added
+  },
 ]
+
 
 export const mockContacts = [
   { id: '1', userId: '1', name: 'Alice', number: '1234567890', group: 'Leads' },
