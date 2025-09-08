@@ -1,7 +1,13 @@
 import CampaignPreview from '../../../components/campaigns/CampaignPreview'
 import { mockCampaigns } from '../../../lib/mockData'
 
-export default function CampaignPreviewPage({ params }: { params: { id: string } }) {
-  const campaign = mockCampaigns.find(c => c.id === params.id)
+interface CampaignPreviewPageProps {
+  params: Promise<{ id: string }>
+}
+
+export default async function CampaignPreviewPage({ params }: CampaignPreviewPageProps) {
+  const { id } = await params
+  const campaign = mockCampaigns.find(c => c.id === id)
+
   return <CampaignPreview campaign={campaign || {}} />
 }
