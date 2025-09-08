@@ -1,7 +1,9 @@
 export default function ReportDetails({ report }: { report: any }) {
-  const successRate = report.delivered > 0 
+  const successRate: string =
+  report.delivered > 0
     ? ((report.delivered / (report.delivered + report.failed)) * 100).toFixed(1)
-    : 0
+    : "0.0"
+
   
   const totalMessages = report.delivered + report.failed + report.pending
 
