@@ -1,7 +1,13 @@
 import CampaignForm from '../../../components/campaigns/CampaignForm'
 import { mockCampaigns } from '../../../lib/mockData'
 
-export default function EditCampaignPage({ params }: { params: { id: string } }) {
-  const campaign = mockCampaigns.find(c => c.id === params.id)
+interface EditCampaignPageProps {
+  params: Promise<{ id: string }>
+}
+
+export default async function EditCampaignPage({ params }: EditCampaignPageProps) {
+  const { id } = await params
+  const campaign = mockCampaigns.find(c => c.id === id)
+
   return <CampaignForm campaign={campaign} />
 }
