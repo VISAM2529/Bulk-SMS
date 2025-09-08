@@ -16,18 +16,20 @@ export default function CampaignForm({ campaign }: { campaign?: any }) {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     const newCampaign = {
-      id: campaign?.id || String(mockCampaigns.length + 1),
-      userId: '1',
-      name,
-      message,
-      mediaUrl,
-      ctaButtons: [],
-      contacts,
-      schedule: null,
-      status: 'sent',
-      creditsEstimated: contacts.length * (mediaUrl ? 2 : 1),
-      creditsUsed: contacts.length * (mediaUrl ? 2 : 1),
-    }
+  id: campaign?.id || String(mockCampaigns.length + 1),
+  userId: '1',
+  name,
+  message,
+  mediaUrl,
+  ctaButtons: [],
+  contacts,
+  schedule: null,
+  status: 'sent',
+  creditsEstimated: contacts.length * (mediaUrl ? 2 : 1),
+  creditsUsed: contacts.length * (mediaUrl ? 2 : 1),
+  delivered: 0, // ✅ add this
+}
+
     if (!campaign) mockCampaigns.push(newCampaign)
     else mockCampaigns[mockCampaigns.findIndex(c => c.id === campaign.id)] = newCampaign
     router.push('/campaigns')
