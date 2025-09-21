@@ -1,3 +1,4 @@
+|-- .env
 |-- .gitignore
 |-- eslint.config.mjs
 |-- jsconfig.json
@@ -24,6 +25,82 @@
                 |-- page.tsx
             |-- users
                 |-- page.tsx
+        |-- api
+            |-- admin
+                |-- tickets
+                    |-- route.ts
+                |-- usage
+                    |-- route.ts
+                |-- users
+                    |-- route.ts
+            |-- auth
+                |-- login
+                    |-- route.ts
+                |-- logout
+                    |-- route.ts
+                |-- signup
+                    |-- route.ts
+                |-- whatsapp
+                    |-- connect
+                        |-- route.ts
+                    |-- disconnect
+                        |-- route.ts
+                    |-- status
+                        |-- route.ts
+            |-- campaigns
+                |-- preview
+                    |-- route.ts
+                |-- route.ts
+                |-- [id]
+                    |-- preview
+                        |-- route.ts
+                    |-- route.ts
+                    |-- status
+                        |-- route.ts
+            |-- contacts
+                |-- groups
+                    |-- route.ts
+                    |-- [id]
+                        |-- route.ts
+                |-- route.ts
+                |-- upload
+                    |-- route.ts
+            |-- messages
+                |-- bulk
+                    |-- route.ts
+                |-- send
+                    |-- route.ts
+                |-- status
+                    |-- route.ts
+            |-- reports
+                |-- campaigns
+                    |-- route.ts
+                |-- export
+                    |-- route.ts
+                |-- route.ts
+                |-- [id]
+                    |-- route.ts
+            |-- templates
+                |-- route.ts
+                |-- [id]
+                    |-- route.ts
+                    |-- status
+                        |-- route.ts
+            |-- test
+                |-- sms
+                    |-- route.ts
+            |-- users
+                |-- billing
+                    |-- route.ts
+                |-- credits
+                    |-- route.ts
+                |-- profile
+                    |-- route.ts
+                |-- settings
+                    |-- route.ts
+            |-- webhooks
+                |-- whatsapp
+                    |-- route.ts
         |-- auth
             |-- forgot-password
                 |-- page.tsx
@@ -106,7 +183,10 @@
         |-- globals.css
         |-- layout.jsx
         |-- lib
+            |-- auth.ts
+            |-- db.ts
             |-- mockData.ts
+            |-- utils.ts
         |-- page.js
         |-- reports
             |-- export
@@ -121,4 +201,19 @@
                 |-- page.tsx
             |-- profile
                 |-- page.tsx
+    |-- lib
+        |-- auth.ts
+        |-- db.ts
+        |-- fast2sms.ts
+        |-- utils.ts
+        |-- whatsapp.ts
+    |-- models
+        |-- Campaign.ts
+        |-- Contact.ts
+        |-- ContactGroup.ts
+        |-- CreditTransaction.ts
+        |-- Message.ts
+        |-- MessageTemplate.ts
+        |-- User.ts
+        |-- WebhookEvent.ts
 |-- tsconfig.json
