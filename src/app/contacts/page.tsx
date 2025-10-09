@@ -1,37 +1,152 @@
-import Link from 'next/link'
-import ContactList from '../components/contacts/ContactList'
-import { mockContacts } from '../lib/mockData'
+"use client";
+import Link from 'next/link';
+import ContactList from '../components/contacts/ContactList';
+import { useAuth } from '../contexts/AuthContext';
+import { useEffect, useState } from 'react';
 
-export default function ContactsPage() {
+export default function Contacts() {
+  const { user } = useAuth();
+  const [contacts, setContacts] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [creating, setCreating] = useState(false);
+  const [newName, setNewName] = useState('');
+  const [newPhone, setNewPhone] = useState('');
+  const [createError, setCreateError] = useState<string | null>(null);
+
+  const fetchContacts = async () => {
+    if (!user) return;
+    setLoading(true);
+    setError(null);
+    try {
+      const res = await fetch('/api/contacts', {
+        headers: {
+          Authorization: user.token ? `Bearer ${user.token}` : '',
+        },
+      });
+      if (!res.ok) throw new Error('Failed to fetch contacts');
+      const data = await res.json();
+      setContacts(data.contacts || []);
+    } catch (err: any) {
+      setError(err.message || 'Error fetching contacts');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchContacts();
+  }, [user]);
+
+  const handleCreateContact = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!user) return;
+    setCreating(true);
+    setCreateError(null);
+    try {
+      const res = await fetch('/api/contacts', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: user.token ? `Bearer ${user.token}` : '',
+        },
+        body: JSON.stringify({ name: newName, phoneNumber: newPhone }),
+      });
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data.message || 'Failed to create contact');
+      }
+      setNewName('');
+      setNewPhone('');
+      fetchContacts();
+    } catch (err: any) {
+      setCreateError(err.message || 'Error creating contact');
+    } finally {
+      setCreating(false);
+    }
+  };
+
+  if (!user) return <div className="p-6">Please log in to view contacts.</div>;
+
   return (
     <div className="p-6 bg-gradient-to-br from-blue-50 to-indigo-50 min-h-screen">
+      <form onSubmit={handleCreateContact} className="mb-6 flex gap-4 items-end">
+        <div>
+          <label className="block text-sm font-medium text-gray-700">Name</label>
+          <input
+            type="text"
+            value={newName}
+            onChange={(e) => setNewName(e.target.value)}
+            className="mt-1 block w-full border rounded px-3 py-2"
+            required
+          />
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-gray-700">Phone Number</label>
+          <input
+            type="text"
+            value={newPhone}
+            onChange={(e) => setNewPhone(e.target.value)}
+            className="mt-1 block w-full border rounded px-3 py-2"
+            required
+          />
+        </div>
+        <button
+          type="submit"
+          disabled={creating}
+          className="bg-indigo-600 text-white px-4 py-2 rounded shadow hover:bg-indigo-700 disabled:opacity-50"
+        >
+          {creating ? 'Adding...' : 'Add Contact'}
+        </button>
+        {createError && <span className="text-red-500 ml-2">{createError}</span>}
+      </form>
       <div className="mb-6 flex justify-between items-center">
         <div>
           <h1 className="text-3xl font-bold text-gray-800">Contacts</h1>
           <p className="text-gray-600 mt-1">Manage your contact list and groups</p>
         </div>
         <div className="flex space-x-3">
-          <Link 
-            href="/contacts/upload" 
+          <Link
+            href="/contacts/upload"
             className="bg-gradient-to-r from-indigo-600 to-indigo-700 text-white px-6 py-3 rounded-lg shadow-md hover:from-indigo-700 hover:to-indigo-800 transition-all flex items-center"
           >
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
-              <path fillRule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM6.293 6.707a1 1 0 010-1.414l3-3a1 1 0 011.414 0l3 3a1 1 0 01-1.414 1.414L11 5.414V13a1 1 0 11-2 0V5.414L7.707 6.707a1 1 0 01-1.414 0z" clipRule="evenodd" />
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-5 w-5 mr-2"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+            >
+              <path
+                fillRule="evenodd"
+                d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM6.293 6.707a1 1 0 010-1.414l3-3a1 1 0 011.414 0l3 3a1 1 0 01-1.414 1.414L11 5.414V13a1 1 0 11-2 0V5.414L7.707 6.707a1 1 0 01-1.414 0z"
+                clipRule="evenodd"
+              />
             </svg>
             Upload Contacts
           </Link>
-          <Link 
-            href="/contacts/groups/create" 
+          <Link
+            href="/contacts/groups/create"
             className="bg-gradient-to-r from-green-600 to-green-700 text-white px-6 py-3 rounded-lg shadow-md hover:from-green-700 hover:to-green-800 transition-all flex items-center"
           >
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-5 w-5 mr-2"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+            >
               <path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3zM6 8a2 2 0 11-4 0 2 2 0 014 0zM16 18v-3a5.972 5.972 0 00-.75-2.906A3.005 3.005 0 0119 15v3h-3zM4.75 12.094A5.973 5.973 0 004 15v3H1v-3a3 3 0 013.75-2.906z" />
             </svg>
             Create Group
           </Link>
         </div>
       </div>
-      <ContactList contacts={mockContacts} />
+      {loading ? (
+        <div>Loading contacts...</div>
+      ) : error ? (
+        <div className="text-red-500">{error}</div>
+      ) : (
+        <ContactList contacts={contacts} />
+      )}
     </div>
-  )
+  );
 }

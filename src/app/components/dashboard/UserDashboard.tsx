@@ -1,14 +1,43 @@
-"use client"
-import { useAuth } from '../../contexts/AuthContext'
-import Charts from './Charts'
-import { mockCampaigns } from '../../lib/mockData'
+"use client";
+import { useAuth } from '../../contexts/AuthContext';
+import Charts from './Charts';
+import { useEffect, useState } from 'react';
 
 export default function UserDashboard() {
-  const { user } = useAuth()
-  const campaigns = mockCampaigns.filter(c => c.userId === user?.id)
-  const messagesSent = campaigns.reduce((sum, c) => sum + c.creditsUsed, 0)
-  const successfulMessages = campaigns.reduce((sum, c) => sum + c.delivered, 0)
-  const successRate = messagesSent > 0 ? (successfulMessages / messagesSent * 100).toFixed(1) : 0
+  const { user } = useAuth();
+  const [campaigns, setCampaigns] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchCampaigns = async () => {
+      if (!user) return;
+      setLoading(true);
+      setError(null);
+      try {
+        const res = await fetch('/api/campaigns', {
+          headers: {
+            Authorization: user.token ? `Bearer ${user.token}` : '',
+          },
+        });
+        if (!res.ok) throw new Error('Failed to fetch campaigns');
+        const data = await res.json();
+        setCampaigns(data.campaigns || []);
+      } catch (err: any) {
+        setError(err.message || 'Error fetching campaigns');
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchCampaigns();
+  }, [user]);
+
+  const messagesSent = campaigns.reduce((sum, c) => sum + (c.creditsUsed || 0), 0);
+  const successfulMessages = campaigns.reduce((sum, c) => sum + (c.delivered || 0), 0);
+  const successRate = messagesSent > 0 ? ((successfulMessages / messagesSent) * 100).toFixed(1) : 0;
+
+  if (loading) return <div>Loading dashboard...</div>;
+  if (error) return <div className="text-red-500">{error}</div>;
 
   return (
     <div className="p-6 bg-gradient-to-br from-blue-50 to-indigo-50 min-h-screen">
@@ -85,5 +114,5 @@ export default function UserDashboard() {
 
       <Charts data={campaigns} />
     </div>
-  )
+  );
 }

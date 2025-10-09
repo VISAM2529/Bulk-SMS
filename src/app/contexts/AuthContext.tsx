@@ -1,6 +1,6 @@
 "use client"
-import { createContext, useContext, useState, ReactNode } from 'react'
-import { mockUsers } from '../lib/mockData'
+import { createContext, useContext, useState, useEffect, ReactNode } from 'react'
+
 
 interface AuthContextType {
   user: any | null
@@ -14,21 +14,60 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined)
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<any | null>(null)
 
+
   const login = async (email: string, password: string) => {
-    const user = mockUsers.find(u => u.email === email && u.password === password)
-    if (!user) throw new Error('Invalid credentials')
-    setUser(user)
-  }
+    const res = await fetch('/api/auth/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password })
+    });
+    if (!res.ok) {
+      const data = await res.json();
+      throw new Error(data.message || 'Login failed');
+    }
+    const data = await res.json();
+    setUser({ ...data.user, token: data.token });
+    // Optionally, store token in localStorage/sessionStorage for persistence
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('authToken', data.token);
+      localStorage.setItem('user', JSON.stringify({ ...data.user, token: data.token }));
+    }
+  };
+
 
   const signup = async (name: string, email: string, password: string) => {
-    const exists = mockUsers.find(u => u.email === email)
-    if (exists) throw new Error('Email already exists')
-    const newUser = { id: String(mockUsers.length + 1), name, email, password, role: 'user', fast2smsApiKey: '', creditBalance: 0 }
-    mockUsers.push(newUser)
-    setUser(newUser)
-  }
+    const res = await fetch('/api/auth/signup', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name, email, password })
+    });
+    if (!res.ok) {
+      const data = await res.json();
+      throw new Error(data.message || 'Signup failed');
+    }
+    const data = await res.json();
+    setUser({ ...data.user, token: data.token });
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('authToken', data.token);
+      localStorage.setItem('user', JSON.stringify({ ...data.user, token: data.token }));
+    }
+  };
 
-  const logout = () => setUser(null)
+  const logout = () => {
+    setUser(null);
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem('authToken');
+      localStorage.removeItem('user');
+    }
+  };
+
+  // On mount, restore user from localStorage if present
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const storedUser = localStorage.getItem('user');
+      if (storedUser) setUser(JSON.parse(storedUser));
+    }
+  }, []);
 
   return <AuthContext.Provider value={{ user, login, logout, signup }}>{children}</AuthContext.Provider>
 }

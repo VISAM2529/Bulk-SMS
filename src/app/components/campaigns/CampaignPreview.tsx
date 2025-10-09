@@ -5,7 +5,7 @@ export default function CampaignPreview({ campaign }: { campaign: any }) {
       <div className="border p-2 rounded bg-gray-100">
         <p>{campaign.message}</p>
         {campaign.mediaUrl && <img src={campaign.mediaUrl} alt="Media" className="mt-2" />}
-        <p>Recipients: {campaign.contacts.join(', ')}</p>
+  <p>Recipients: {Array.isArray(campaign.contacts) ? campaign.contacts.join(', ') : ''}</p>
       </div>
     </div>
   )

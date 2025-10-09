@@ -1,4 +1,3 @@
-// models/Contact.ts
 import mongoose, { Document, Schema } from 'mongoose';
 
 export interface IContact extends Document {
@@ -42,4 +41,8 @@ const contactSchema = new Schema<IContact>({
 contactSchema.index({ userId: 1, phoneNumber: 1 }, { unique: true });
 contactSchema.index({ userId: 1, groups: 1 });
 
-export default mongoose.model<IContact>('Contact', contactSchema);
+// ✅ Fix OverwriteModelError
+delete mongoose.models.Contact;
+const Contact = mongoose.models.Contact || mongoose.model<IContact>('Contact', contactSchema);
+
+export default Contact;

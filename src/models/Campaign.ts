@@ -1,4 +1,3 @@
-// models/Campaign.ts
 import mongoose, { Document, Schema } from 'mongoose';
 
 export interface ICampaign extends Document {
@@ -81,5 +80,8 @@ const campaignSchema = new Schema<ICampaign>({
 campaignSchema.index({ userId: 1, status: 1 });
 campaignSchema.index({ schedule: 1 });
 campaignSchema.index({ userId: 1, createdAt: -1 });
+delete mongoose.models.Campaign;
+// ✅ Fix OverwriteModelError
+const Campaign = mongoose.models.Campaign || mongoose.model<ICampaign>('Campaign', campaignSchema);
 
-export default mongoose.model<ICampaign>('Campaign', campaignSchema);
+export default Campaign;

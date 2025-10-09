@@ -1,12 +1,37 @@
 "use client"
 import { useAuth } from '../contexts/AuthContext'
 import CampaignList from '../components/campaigns/CampaignList'
-import { mockCampaigns } from '../lib/mockData'
+import { useEffect, useState } from 'react'
 import Link from 'next/link'
 
 export default function CampaignsPage() {
-  const { user } = useAuth()
-  const campaigns = mockCampaigns.filter(c => c.userId === user?.id)
+  const { user } = useAuth();
+  const [campaigns, setCampaigns] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchCampaigns = async () => {
+      if (!user) return;
+      setLoading(true);
+      setError(null);
+      try {
+        const res = await fetch('/api/campaigns', {
+          headers: {
+            Authorization: user.token ? `Bearer ${user.token}` : ''
+          }
+        });
+        if (!res.ok) throw new Error('Failed to fetch campaigns');
+        const data = await res.json();
+        setCampaigns(data.campaigns || []);
+      } catch (err: any) {
+        setError(err.message || 'Error fetching campaigns');
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchCampaigns();
+  }, [user]);
 
   return (
     <div className="p-6 bg-gradient-to-br from-blue-50 to-indigo-50 min-h-screen">
@@ -25,7 +50,13 @@ export default function CampaignsPage() {
           Create Campaign
         </Link>
       </div>
-      <CampaignList campaigns={campaigns} />
+      {loading ? (
+        <div>Loading campaigns...</div>
+      ) : error ? (
+        <div className="text-red-500">{error}</div>
+      ) : (
+        <CampaignList campaigns={campaigns} />
+      )}
     </div>
-  )
+  );
 }

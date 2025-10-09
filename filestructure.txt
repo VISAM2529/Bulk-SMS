@@ -101,6 +101,9 @@
             |-- webhooks
                 |-- whatsapp
                     |-- route.ts
+            |-- whatsapp
+                |-- send
+                    |-- route.ts
         |-- auth
             |-- forgot-password
                 |-- page.tsx
@@ -116,6 +119,8 @@
             |-- create
                 |-- page.tsx
             |-- page.tsx
+            |-- send-message
+                |-- page.tsx
             |-- [id]
                 |-- edit
                     |-- page.tsx
@@ -209,6 +214,7 @@
         |-- whatsapp.ts
     |-- models
         |-- Campaign.ts
+        |-- CampaignMessageInsight.ts
         |-- Contact.ts
         |-- ContactGroup.ts
         |-- CreditTransaction.ts

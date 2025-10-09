@@ -1,4 +1,3 @@
-// models/ContactGroup.ts
 import mongoose, { Document, Schema } from 'mongoose';
 
 export interface IContactGroup extends Document {
@@ -35,4 +34,7 @@ const contactGroupSchema = new Schema<IContactGroup>({
 
 contactGroupSchema.index({ userId: 1, name: 1 }, { unique: true });
 
-export default mongoose.model<IContactGroup>('ContactGroup', contactGroupSchema);
+// ✅ Fix OverwriteModelError
+const ContactGroup = mongoose.models.ContactGroup || mongoose.model<IContactGroup>('ContactGroup', contactGroupSchema);
+
+export default ContactGroup;

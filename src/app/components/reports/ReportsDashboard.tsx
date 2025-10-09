@@ -1,12 +1,44 @@
+"use client"
 import Link from 'next/link'
-import { mockReports } from '../../lib/mockData'
+import { useAuth } from '../../contexts/AuthContext'
+import { useEffect, useState } from 'react'
 
 export default function ReportsDashboard() {
-  const totalDelivered = mockReports.reduce((sum, report) => sum + report.delivered, 0)
-  const totalFailed = mockReports.reduce((sum, report) => sum + report.failed, 0)
-  const totalPending = mockReports.reduce((sum, report) => sum + report.pending, 0)
-  const successRate = totalDelivered > 0 ? ((totalDelivered / (totalDelivered + totalFailed)) * 100).toFixed(1) : 0
+  const { user } = useAuth();
+  const [reports, setReports] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
+  useEffect(() => {
+    const fetchReports = async () => {
+      if (!user) return;
+      setLoading(true);
+      setError(null);
+      try {
+        const res = await fetch('/api/reports', {
+          headers: {
+            Authorization: user.token ? `Bearer ${user.token}` : ''
+          }
+        });
+        if (!res.ok) throw new Error('Failed to fetch reports');
+        const data = await res.json();
+        setReports(data.reports || []);
+      } catch (err: any) {
+        setError(err.message || 'Error fetching reports');
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchReports();
+  }, [user]);
+
+  const totalDelivered = reports.reduce((sum, report) => sum + (report.delivered || 0), 0);
+  const totalFailed = reports.reduce((sum, report) => sum + (report.failed || 0), 0);
+  const totalPending = reports.reduce((sum, report) => sum + (report.pending || 0), 0);
+  const successRate = totalDelivered > 0 ? ((totalDelivered / (totalDelivered + totalFailed)) * 100).toFixed(1) : 0;
+
+  if (loading) return <div>Loading reports...</div>;
+  if (error) return <div className="text-red-500">{error}</div>;
   return (
     <div className="p-6 bg-gradient-to-br from-blue-50 to-indigo-50 min-h-screen">
       <div className="mb-6 flex justify-between items-center">
@@ -98,7 +130,7 @@ export default function ReportsDashboard() {
             />
           </div>
           <span className="text-sm text-gray-600">
-            {mockReports.length} report{mockReports.length !== 1 ? 's' : ''}
+            {reports.length} report{reports.length !== 1 ? 's' : ''}
           </span>
         </div>
 
@@ -115,7 +147,7 @@ export default function ReportsDashboard() {
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200">
-              {mockReports.map((report) => {
+              {reports.map((report) => {
                 const reportSuccessRate = report.delivered > 0 
                   ? ((report.delivered / (report.delivered + report.failed)) * 100).toFixed(1)
                   : 0
@@ -176,7 +208,7 @@ export default function ReportsDashboard() {
 
         <div className="px-6 py-4 bg-gray-50 border-t border-gray-200 flex justify-between items-center">
           <span className="text-sm text-gray-600">
-            Showing {mockReports.length} of {mockReports.length} reports
+            Showing {reports.length} of {reports.length} reports
           </span>
           <div className="flex space-x-2">
             <button className="px-3 py-1 text-sm text-gray-600 hover:text-gray-800 transition-colors">
